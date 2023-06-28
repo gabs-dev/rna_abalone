@@ -17,13 +17,19 @@ public class Main {
 
         for (int i = 0; i < 10000; i++) {
             double error = 0; // Erro da época
+            int classificationError = 0;
             for (Data data : abaloneData) {
                 double[] x = data.getInput();
                 double[] y = data.getOutput();
                 double[] theta = perceptron.train(x, y);
                 error += sampleError(y, theta);
+
+                for (int j = 0; j < y.length; j++) {
+                    double classification = Math.abs(y[j] - threshold(theta[j]));
+                    classificationError += setRank((int)classification);
+                }
             }
-            System.out.println("Época: " + (i + 1) + " - Erro: " + error);
+            System.out.println("Época: " + (i + 1) + "\t - Erro de aproximação: " + error + "\t - Erro de classificação: " + classificationError);
         }
 
     }
@@ -95,6 +101,20 @@ public class Main {
             error += Math.abs(y[i] - theta[i]);
 
         return error;
+    }
+
+    private static int threshold(double theta) {
+        if (theta < 0.5)
+            return 0;
+        else
+            return 1;
+    }
+
+    private static int setRank(int classification) {
+        if (classification > 0)
+            return 1;
+        else
+            return 0;
     }
 
 }
